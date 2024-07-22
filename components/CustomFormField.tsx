@@ -10,11 +10,13 @@ import {
   } from "@/components/ui/form"
   import { Input } from "@/components/ui/input"
 import { Control } from "react-hook-form"
-import { FormFieldType } from "./forms/PatientForm"
+import {  FormFieldType } from "./forms/PatientForm"
 import Image from "next/image"
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
+import DatePicker from "react-datepicker";
 
+import "react-datepicker/dist/react-datepicker.css";
 import {E164Number} from 'libphonenumber-js/core'
   interface CustomProps {
     control:Control<any>
@@ -33,9 +35,9 @@ import {E164Number} from 'libphonenumber-js/core'
   }
   const RenderField=({field,props}:{field:any,props:CustomProps})=>{
     
-    const { fieldTypes, placeholder ,iconSrc,iconAlt}=props
+    const { fieldTypes, placeholder ,iconSrc,iconAlt ,showTimeSelect,dateFormat}=props
     switch (fieldTypes) {
-        case FormFieldType.INPUT:
+      case FormFieldType.INPUT:
         return (
             <div className="flex rounded-md border border-dark-500 bg-dark-400">
                 {iconSrc && (<Image src={iconSrc} height={24} width={24} alt={iconAlt||'icon'} className="ml-2"/>)}
@@ -44,11 +46,12 @@ import {E164Number} from 'libphonenumber-js/core'
                 </FormControl>
             </div>
         )
-        case FormFieldType.PHONE_INPUT:
+      case FormFieldType.PHONE_INPUT:
+
             return(
                 <FormControl>
                     <PhoneInput
-                    placeholder
+                    
                     international
                     withCountryCallingCode
                     value={field.value as E164Number |undefined}
@@ -59,10 +62,19 @@ import {E164Number} from 'libphonenumber-js/core'
                     />
                 </FormControl>
             )
+      case FormFieldType.DATE_PICKER:
+        return (<div className="flex rounded-md border border-dark-500 bg-dark-400`">
+                <Image src='/assets/icons/calendar.svg' height={24} width={24}
+                 alt="calendar" className="ml-2"/>
+                <FormControl className="bg-dark-400 ">
+                <DatePicker  selected={field.value} onChange={(date) => field.onChange(date)} 
+                dateFormat={dateFormat ?? 'MM/dd/yyyy/'} showTimeSelect={showTimeSelect ?? false} />
+                </FormControl>
+              </div>)
         default:
             break;
     }
-  }
+}
   
 const CustomFormField = (props:CustomProps) => {
     const {control , fieldTypes, label, name ,}=props
@@ -81,8 +93,8 @@ const CustomFormField = (props:CustomProps) => {
           </FormItem>
         )}
       />
-    </>
-  )
+    </>)
+  
 }
 
 export default CustomFormField

@@ -6,6 +6,7 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import {
   Form,
+  FormControl,
 
 } from "@/components/ui/form"
 import CustomFormField from "../CustomFormField"
@@ -15,18 +16,17 @@ import { UserFormValidation } from "@/lib/validation"
 import { notFound, useRouter } from "next/navigation"
 import { createUser } from "@/lib/actions/patient.actions"
 import { error } from "console"
+import { FormFieldType } from "./PatientForm"
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
+import { GenderOption } from "@/constants"
+import { Label } from "../ui/label"
 
-export enum FormFieldType{
-  INPUT='input',
-  TEXTAREA='textarea',
-  PHONE_INPUT= 'phoneInput',
-  CHECKBOX='checkbox',
-  DATE_PICKER='datePicker',
-  SELECT='select',
-  SKELETON = 'skeleton',
+
+interface RegisterFormType {
+    user:User
 }
 
-export default function PatientForm() {
+export default function RegisterForm({user}:RegisterFormType) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   // 1. Define your form.
@@ -62,20 +62,26 @@ export default function PatientForm() {
   
   return(
     <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <section className="mb-12 space-y-4">
-            <h1 className="header">Hi there 🖐️</h1>
-            <p className="text-dark-700">Schedule your first appointment</p>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12 flex-1">
+        <section className="space-y-4">
+            <h1 className="header">welcom 🖐️</h1>
+            <p className="text-dark-700">let us know more about you</p>
+        </section>
+        <section className="space-y-6">
+            <div className="mb-9 space-y-1">
+            <h2 className="sub-header">Personal Information</h2>
+            </div>
         </section>
         <CustomFormField 
         control={form.control}
         fieldTypes={FormFieldType.INPUT}
         name="name"
-        label="Full name"
+        label="Full Name"
         placeholder='JoJo'
         iconSrc='/assets/icons/user.svg'
         iconAlt='user'
         />
+        <div className="flex flex-col gap-6 x xl:flex-row">
         <CustomFormField 
         control={form.control}
         fieldTypes={FormFieldType.INPUT}
@@ -91,6 +97,45 @@ export default function PatientForm() {
         name="phone"
         label="Phone number"
         />
+        </div>
+        <div className="flex flex-col gap-6 xl:flex-row">
+        <CustomFormField 
+        control={form.control}
+        fieldTypes={FormFieldType.DATE_PICKER}
+        name="birthDate"
+        label="Date of Birth"
+       
+        />
+        <CustomFormField 
+        control={form.control}
+        fieldTypes={FormFieldType.SKELETON}
+        name="gender"
+        label="Gender"
+        renderSkeleton={(field)=>(
+          <FormControl>
+            <RadioGroup 
+            className="flex h-11 gap-6 xl:justify-between"
+            onValueChange={field.onChange}
+            defaultValue={field.value}
+            >
+              {GenderOption.map((option)=>(
+                <div key={option} className="radio-group">
+                  <RadioGroupItem
+                    value={option} id={option}/>
+                      <Label htmlFor={option} className="cursor-pointer">
+                        {option}
+                      </Label>
+                  
+                </div>
+              ))}
+            </RadioGroup>
+          </FormControl>
+        )}
+        />
+        </div>
+        <div className="flex flex-col gap-6 xl:flex-row">
+
+        </div>
       <SubmitButton isLoading={isLoading} >
       Get Started
       </SubmitButton>
