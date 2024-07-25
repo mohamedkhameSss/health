@@ -18,6 +18,7 @@ import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 import {E164Number} from 'libphonenumber-js/core'
+import { SelectContent, SelectTrigger,Select, SelectValue } from "./ui/select"
   interface CustomProps {
     control:Control<any>
     fieldTypes:FormFieldType
@@ -35,7 +36,7 @@ import {E164Number} from 'libphonenumber-js/core'
   }
   const RenderField=({field,props}:{field:any,props:CustomProps})=>{
     
-    const { fieldTypes, placeholder ,iconSrc,iconAlt ,showTimeSelect,dateFormat}=props
+    const { fieldTypes, placeholder ,iconSrc,iconAlt ,showTimeSelect,dateFormat,renderSkeleton}=props
     switch (fieldTypes) {
       case FormFieldType.INPUT:
         return (
@@ -62,15 +63,36 @@ import {E164Number} from 'libphonenumber-js/core'
                     />
                 </FormControl>
             )
+      case FormFieldType.SELECT:
+        return(
+          <FormControl>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <FormControl>
+              <SelectTrigger className="shad-select-trigger">
+                <SelectValue placeholder={placeholder}/>
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent className="shad-select-content">
+              {props.children}
+            </SelectContent>
+            </Select>
+          </FormControl>
+        )      
       case FormFieldType.DATE_PICKER:
         return (<div className="flex rounded-md border border-dark-500 bg-dark-400`">
                 <Image src='/assets/icons/calendar.svg' height={24} width={24}
                  alt="calendar" className="ml-2"/>
                 <FormControl className="bg-dark-400 ">
                 <DatePicker  selected={field.value} onChange={(date) => field.onChange(date)} 
-                dateFormat={dateFormat ?? 'MM/dd/yyyy/'} showTimeSelect={showTimeSelect ?? false} />
+                dateFormat={dateFormat ?? 'MM/dd/yyyy/'} showTimeSelect={showTimeSelect ?? false}
+                wrapperClassName="date-picker"
+                />
                 </FormControl>
-              </div>)
+              </div>);
+
+
+          case FormFieldType.SKELETON:
+            return renderSkeleton && renderSkeleton(field)
         default:
             break;
     }
