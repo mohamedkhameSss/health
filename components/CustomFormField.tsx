@@ -19,6 +19,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {E164Number} from 'libphonenumber-js/core'
 import { SelectContent, SelectTrigger,Select, SelectValue } from "./ui/select"
+import { Textarea } from "./ui/textarea"
+import { Checkbox } from "./ui/checkbox"
+import { Label } from "./ui/label"
   interface CustomProps {
     control:Control<any>
     fieldTypes:FormFieldType
@@ -77,7 +80,30 @@ import { SelectContent, SelectTrigger,Select, SelectValue } from "./ui/select"
             </SelectContent>
             </Select>
           </FormControl>
-        )      
+        ) 
+      case FormFieldType.TEXTAREA:
+        return(
+          <FormControl>
+            <Textarea 
+            placeholder={placeholder}
+            {...field}
+            className="shad-textArea"
+            disabled={props.disabled}
+            />
+          </FormControl>
+        )
+      case FormFieldType.CHECKBOX:
+        return(
+          <FormControl>
+            <div className="flex items-center gap-4">
+           <Checkbox id={props.name}
+           checked={field.value}
+           onCheckedChange={field.onChange}
+           />
+           <Label htmlFor={props.name} className="checkbox-label">{props.label}</Label>
+            </div>
+          </FormControl>
+        )         
       case FormFieldType.DATE_PICKER:
         return (<div className="flex rounded-md border border-dark-500 bg-dark-400`">
                 <Image src='/assets/icons/calendar.svg' height={24} width={24}
