@@ -13,7 +13,6 @@ import SubmitButton from "../SubmitButton"
 import { useState } from "react"
 import { UserFormValidation } from "@/lib/validation"
 import { notFound, useRouter } from "next/navigation"
-import { createUser } from "@/lib/actions/patient.actions"
 import { error } from "console"
 
 export enum FormFieldType{
@@ -40,29 +39,11 @@ export default function PatientForm() {
   })
 
   // 2. Define a submit handler.
-  async function onSubmit({ name, email, phone }: z.infer<typeof UserFormValidation>) {
-    setIsLoading(true);
-    try {
-      const userData = { name, email, phone };
-      const user = await createUser(userData);
-
-      if (user) {
-        router.push(`/patients/${user.$id}/register`);
-      } else {
-        // Handle unsuccessful user creation (e.g., display an error message)
-        notFound()
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false); // Set loading state to false even in case of errors
-    }
-  }
-
+ 
   
   return(
-    <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+    <Form  {...form}>
+    <form  className="space-y-8">
         <section className="mb-12 space-y-4">
             <h1 className="header">Hi there 🖐️</h1>
             <p className="text-dark-700">Schedule your first appointment</p>

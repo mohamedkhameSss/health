@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Button } from "@/components/ui/button"
+
 import {
   Form,
   FormControl,
@@ -11,11 +11,10 @@ import {
 } from "@/components/ui/form"
 import CustomFormField from "../CustomFormField"
 import SubmitButton from "../SubmitButton"
-import { useState } from "react"
+
 import { PatientFormValidation, UserFormValidation } from "@/lib/validation"
-import { notFound, useRouter } from "next/navigation"
-import { createUser, registerPatient } from "@/lib/actions/patient.actions"
-import { error } from "console"
+
+
 import { FormFieldType } from "./PatientForm"
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 import { Doctors, GenderOptions, IdentificationTypes, PatientFormDefaultValues } from "@/constants"
@@ -24,65 +23,24 @@ import { SelectItem } from "../ui/select"
 import Image from "next/image"
 import FileUploader from "../FileUploader"
 
+const form = useForm<z.infer<typeof UserFormValidation>>({
+  resolver: zodResolver(UserFormValidation),
+  defaultValues: {
+    name: "",
+    email:'',
+    phone:'',
+  },
+})
 
 
-interface RegisterFormType {
-    user:User
-}
 
-export default function RegisterForm({user}:RegisterFormType) {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof PatientFormValidation>>({
-    resolver: zodResolver(PatientFormValidation),
-    defaultValues: {
-      ...PatientFormDefaultValues,
-      name: "",
-      email:'',
-      phone:'',
-    },
-  })
+export default function RegisterForm() {
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof PatientFormValidation>) {
-    setIsLoading(true);
-    let formData;
-    if(values.identificationDocument && values.identificationDocument.length > 0){
-        const blobFile =new Blob([values.identificationDocument[0]],{
-          type:values.identificationDocument[0].type,
-        })
-        formData=new FormData();
-        formData.append('blobFile',blobFile)
-        formData.append('fileName',values.identificationDocument[0].name)
-    }
-    try {
-        const patientData={
-          ...values,
-          userId:user.$id,
-          birthDate:new Date(values.birthDate),
-          IdentificationDocuments:formData,
-        }
-        const patient = await registerPatient(patientData);
-        if(patient) router.push(`/patients/${user.$id}/new-appointment`)
 
-      if (user) {
-        router.push(`/patients/${user.$id}/register`);
-      } else {
-        // Handle unsuccessful user creation (e.g., display an error message)
-        notFound()
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false); // Set loading state to false even in case of errors
-    }
-  }
-
-  
   return(
     <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12 flex-1">
+    <form  className="space-y-12 flex-1">
         <section className="space-y-4">
             <h1 className="header">welcom 🖐️</h1>
             <p className="text-dark-700">let us know more about you</p>
@@ -180,13 +138,13 @@ export default function RegisterForm({user}:RegisterFormType) {
         placeholder="Guardian's name"
        
         />
-          <CustomFormField 
+          {/* <CustomFormField 
         control={form.control}
         fieldTypes={FormFieldType.INPUT}
-        name="emergencyContactName"
-        label="Emergency contact name"
+        name="emergencyContactNumber"
+        label="Emergency contact number"
         placeholder="(555) 123-4567"
-        />
+        /> */}
         </div>
         <section className="space-y-6">
             <div className="mb-9 space-y-1">
@@ -212,14 +170,14 @@ export default function RegisterForm({user}:RegisterFormType) {
           ))}
         </CustomFormField>
         <div className="flex flex-col gap-6 xl:flex-row">
-        <CustomFormField 
+        {/* <CustomFormField 
         control={form.control}
         fieldTypes={FormFieldType.INPUT}
         name="insuranceProvider"
         label="Insurance Provider"
         placeholder="BlueCross BlueShield"
        
-        />
+        /> */}
           <CustomFormField 
         control={form.control}
         fieldTypes={FormFieldType.INPUT}
@@ -237,13 +195,7 @@ export default function RegisterForm({user}:RegisterFormType) {
         placeholder="BlueCross BlueShield"
        
         />
-          <CustomFormField 
-        control={form.control}
-        fieldTypes={FormFieldType.INPUT}
-        name="insuracePolicyNumber"
-        label="Insurace Policy Number"
-        placeholder="ABC123456789"
-        />
+    
         </div>
         <div className="flex flex-col gap-6 xl:flex-row">
         <CustomFormField 
